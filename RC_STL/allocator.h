@@ -10,8 +10,8 @@
 #define RC_STL_allocator_h
 
 #include <cstddef>
-#include <memory.h>
-#include <limits.h>
+#include <memory>
+#include <limits>
 
 namespace RC {
     
