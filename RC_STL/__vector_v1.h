@@ -11,15 +11,16 @@
 
 
 namespace _v1 {
-    //template<typename int>
+    template<typename T>
     class vector {
     public:
-        using value_type = int;
-        using iterator = int *;
-        using const_iterator = const int *;
+        using value_type = T;
+        using iterator = T *;
+        using const_iterator = const T *;
         using size_type = size_t;
-        using reference = int &;
-        using const_reference = const int &;
+        using difference_type = ptrdiff_t;
+        using reference = T &;
+        using const_reference = const T &;
     private:
         iterator _begin = nullptr;
         iterator _end = nullptr;
@@ -30,7 +31,7 @@ namespace _v1 {
             size_type cap = _end_cap - _begin;
             size_type new_cap = (cap == 0) ? 1 : cap * 2;
             iterator temp = new value_type[new_cap];
-            for (int i = 0; i < size; ++i) {
+            for (auto i = 0; i < size; ++i) {
                 temp[i] = _begin[i];
             }
             delete [] _begin;
@@ -42,28 +43,28 @@ namespace _v1 {
         //special member funcions
         vector() noexcept = default;
         vector(size_type count, const_reference value) {
-            size_t size = 1;
+            size_type size = 1;
             while (size < count) {
                 size *= 2;
             }
             _begin   = new value_type[size];
             _end     = _begin + count;
             _end_cap = _begin + size;
-            for(int i = 0; i < count; ++i) {
+            for(auto i = 0; i < count; ++i) {
                 _begin[i] = value;
             }
         }
         vector(iterator first, iterator last) {
-            size_t length = last - first;
-            if (length > 0) {
-                size_t size = 1;
-                while (size <= length) {
+            difference_type count = last - first;
+            if (count > 0) {
+                size_type size = 1;
+                while (size <= count) {
                     size *= 2;
                 }
                 _begin = new value_type[size];
-                _end = _begin + length;
+                _end = _begin + count;
                 _end_cap = _begin + size;
-                for (int i = 0; first != last; ++i) {
+                for (auto i = 0; first != last; ++i) {
                     _begin[i] = *first++;
                 }
             }
@@ -72,7 +73,7 @@ namespace _v1 {
             _begin = new value_type[other.capacity()];
             _end   = _begin + other.size();
             _end_cap = _begin + other.capacity();
-            for (int i = 0; i < other.size(); ++i) {
+            for (auto i = 0; i < other.size(); ++i) {
                 _begin[i] = other[i];
             }
         }
@@ -84,7 +85,7 @@ namespace _v1 {
             _begin = new value_type[other.capacity()];
             _end = _begin + other.size();
             _end_cap = _begin + other.capacity();
-            for (int i = 0; i < _end - _begin; ++i) {
+            for (auto i = 0; i < _end - _begin; ++i) {
                 _begin[i] = other[i];
             }
             delete [] backup;
@@ -102,7 +103,7 @@ namespace _v1 {
         //accessors
         reference at(size_type pos) {
             if (pos >= size()) {
-                throw std::out_of_range("vector.at: out of range exception!");
+                throw std::out_of_range("at: out of range exception!");
             }
             else {
                 return _begin[pos];
@@ -110,7 +111,7 @@ namespace _v1 {
         }
         const_reference at(size_type pos) const {
             if (pos >= size()) {
-                throw std::out_of_range("vector.at: out of range exception!");
+                throw std::out_of_range("at: out of range exception!");
             }
             else {
                 return _begin[pos];
@@ -161,7 +162,7 @@ namespace _v1 {
         void reserve(size_type new_cap) {
             if (new_cap > _end_cap - _begin) {
                 iterator temp = new value_type[new_cap];
-                for (int i = 0; i < _end - _begin; ++i) {
+                for (auto i = 0; i < _end - _begin; ++i) {
                     temp[i] = _begin[i];
                 }
                 _end = temp + (_end - _begin);
@@ -180,7 +181,7 @@ namespace _v1 {
         }
         iterator insert(iterator pos, const_reference value) {
             if (_end == _end_cap) {
-                auto offset = pos - _begin;
+                difference_type offset = pos - _begin;
                 reallocate();
                 pos = _begin + offset;
             }
@@ -194,7 +195,7 @@ namespace _v1 {
         }
         void insert(iterator pos, size_type count, const_reference value) {
             while (_end + count - 1 >= _end_cap) {
-                auto offset = pos - _begin;
+                difference_type offset = pos - _begin;
                 reallocate();
                 pos = _begin + offset;
             }
@@ -202,11 +203,38 @@ namespace _v1 {
             for (auto it = _end - 1; it != pos + count - 1; --it) {
                 *it = *(it - count);
             }
-            for (int i = 0; i < count; ++i) {
+            for (auto i = 0; i < count; ++i) {
                 *pos++ = value;
             }
         }
-        void insert(iterator pos, iterator first, iterator last);
+        void insert(iterator pos, iterator first, iterator last) {
+            difference_type count = last - first;
+            while (_end + count - 1 >= _end_cap) {
+                difference_type offset = pos - _begin;
+                reallocate();
+                pos = _begin + offset;
+            }
+            _end += count;
+            for (auto it = _end - 1; it != pos + count - 1; --it) {
+                *it = *(it - count);
+            }
+            for (; first != last; ++first, ++pos) {
+                *pos = *first;
+            }
+        }
+        void erase(iterator pos) {
+            for (; pos != _end - 1; ++pos) {
+                *pos = *(pos + 1);
+            }
+            --_end;
+        }
+        void erase(iterator first, iterator last) {
+            difference_type count = last - first;
+            for (; last != _end; ++last) {
+                *(last - count) = *last;
+            }
+            _end -= count;
+        }
         void push_back(const_reference item) {
             if (_end != _end_cap) {
                 *_end++ = item;
@@ -218,6 +246,23 @@ namespace _v1 {
         }
         void pop_back() {
             --_end;
+        }
+        void resize(size_type count, value_type value = value_type()) {
+            difference_type size = _end - _begin;
+            if (count <= size) {
+                _end -= size - count;
+            }
+            else {
+                _end += count - size;
+                for (; size != count; ++size) {
+                    _begin[size] = value;
+                }
+            }
+        }
+        void swap(vector &other) {
+            std::swap(_begin, other._begin);
+            std::swap(_end, other._end);
+            std::swap(_end_cap, other._end_cap);
         }
     };
 }
