@@ -18,6 +18,7 @@ using std::cout;
 using std::endl;
 
 int main(int argc, const char * argv[]) {
+    
     //unit test for
     //iterator insert(iterator pos, const_reference value);
     //passed
@@ -26,7 +27,6 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < 20; ++i) {
         auto beg = a.begin();
         a.insert(beg, i);
-        cout << a.size() << ' ' << a.capacity() << endl;
     }
     for (auto &&i : a) {
         cout << i << ' ';
@@ -37,7 +37,6 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < 20; ++i) {
         auto beg = b.begin();
         b.insert(beg, i);
-        cout << b.size() << ' ' << b.capacity() << endl;
     }
     for (auto &&i : b) {
         cout << i << ' ';
@@ -53,7 +52,6 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < 5; ++i) {
         auto insert_2_beg = insert_2.begin();
         insert_2.insert(insert_2_beg, i, i);
-        cout << insert_2.size() << ' ' << insert_2.capacity() << endl;
     }
     for (auto &&x : insert_2) {
         cout << x << ' ';
@@ -64,7 +62,6 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < 5; ++i) {
         auto insert_2s_beg = insert_2s.begin();
         insert_2s.insert(insert_2s_beg, i, i);
-        cout << insert_2s.size() << ' ' << insert_2s.capacity() << endl;
     }
     for (auto &&x : insert_2s) {
         cout << x << ' ';
@@ -76,27 +73,23 @@ int main(int argc, const char * argv[]) {
     //void insert(iterator pos, iterator first, iterator last);
     //passed
     {
-    _v1::vector<int> a;
-    std::vector<int> b;
-    int c[10] = { 0 };
+    _v1::vector<int> a(1, 1);
+    std::vector<int> b(1, 1);
+    int c[10] = { 0, 1, 2, 3 };
     
     auto it = a.begin();
     a.insert(it, c, c + 10);
     for (auto &&i : a) {
         cout << i << ' ';
     }
-    cout << endl;
-    cout << a.size() << endl;
-    cout << a.capacity() << endl;
+    cout << " size: "<< a.size() << " cap: " << a.capacity() << endl;
     
     auto it1 = b.begin();
     b.insert(it1, c, c + 10);
     for (auto &&i : b) {
         cout << i << ' ';
     }
-    cout << endl;
-    cout << b.size() << endl;
-    cout << b.capacity() << endl;
+    cout << " size: "<< b.size() << " cap: " << b.capacity() << endl;
     }
     
     //unit test for
@@ -114,13 +107,11 @@ int main(int argc, const char * argv[]) {
         for (int i = 0; i < a.size(); ++i) {
             cout << a[i] << ' ';
         }
-        cout << a.size();
-        cout << endl;
+        cout << " size: "<< a.size() << " cap: " << a.capacity() << endl;
         for (int i = 0; i < b.size(); ++i) {
             cout << b[i] << ' ';
         }
-        cout << b.size();
-        cout << endl;
+        cout << " size: "<< b.size() << " cap: " << b.capacity() << endl;
     }
     
     //unit test for
@@ -138,14 +129,12 @@ int main(int argc, const char * argv[]) {
         for (int i = 0; i < a.size(); ++i) {
             cout << a[i] << ' ';
         }
-        cout << endl;
-        cout << a.size() << endl;
+        cout << " size: "<< a.size() << " cap: " << a.capacity() << endl;
         
         for (int i = 0; i < b.size(); ++i) {
             cout << b[i] << ' ';
         }
-        cout << endl;
-        cout << b.size() << endl;
+        cout << " size: "<< b.size() << " cap: " << b.capacity() << endl;
         
     }
     
@@ -165,78 +154,68 @@ int main(int argc, const char * argv[]) {
         for (int i = 0; i < a.size(); ++i) {
             cout << a[i] << ' ';
         }
-        cout << endl;
-        cout << a.size() << ' '<< a.capacity() <<endl;
+        cout << " size: "<< a.size() << " cap: " << a.capacity() << endl;
         for (int i = 0; i < b.size(); ++i) {
             cout << b[i] << ' ';
         }
-        cout << endl;
-        cout << b.size() << ' '<< b.capacity() <<endl;
+        cout << " size: "<< b.size() << " cap: " << b.capacity() << endl;
         
         a.resize(3);
         b.resize(3);
         for (int i = 0; i < a.size(); ++i) {
             cout << a[i] << ' ';
         }
-        cout << endl;
-        cout << a.size() << ' '<< a.capacity() <<endl;
+        cout << " size: "<< a.size() << " cap: " << a.capacity() << endl;
         for (int i = 0; i < b.size(); ++i) {
             cout << b[i] << ' ';
         }
-        cout << endl;
-        cout << b.size() << ' '<< b.capacity() <<endl;
+        cout << " size: "<< b.size() << " cap: " << b.capacity() << endl;
         
         a.resize(10);
         b.resize(10);
         for (int i = 0; i < a.size(); ++i) {
             cout << a[i] << ' ';
         }
-        cout << endl;
-        cout << a.size() << ' '<< a.capacity() <<endl;
+        cout << " size: "<< a.size() << " cap: " << a.capacity() << endl;
         for (int i = 0; i < b.size(); ++i) {
             cout << b[i] << ' ';
         }
-        cout << endl;
-        cout << b.size() << ' '<< b.capacity() <<endl;
-
+        cout << " size: "<< b.size() << " cap: " << b.capacity() << endl;
     }
     
     //unit test for
     //void swap(vector &other);
-    //
+    //passed
     {
         _v1::vector<int> a(10, 1);
         _v1::vector<int> b(5, 0);
         for (int i = 0; i < a.size(); ++i) {
             cout << a[i] << ' ';
         }
-        cout << endl;
-        cout << a.size() << ' ' << a.capacity() << endl;
+        cout << " size: "<< a.size() << " cap: " << a.capacity() << endl;
         
         for (int i = 0; i < b.size(); ++i) {
             cout << b[i] << ' ';
         }
-        cout << endl;
-        cout << b.size() << ' ' << b.capacity() << endl;
+        cout << " size: "<< b.size() << " cap: " << b.capacity() << endl;
         
         a.swap(b);
         
         for (int i = 0; i < a.size(); ++i) {
             cout << a[i] << ' ';
         }
-        cout << endl;
-        cout << a.size() << ' ' << a.capacity() << endl;
+        cout << " size: "<< a.size() << " cap: " << a.capacity() << endl;
         
         for (int i = 0; i < b.size(); ++i) {
             cout << b[i] << ' ';
         }
-        cout << endl;
-        cout << b.size() << ' ' << b.capacity() << endl;
-
-
+        cout << " size: "<< b.size() << " cap: " << b.capacity() << endl;
     }
     
+    //unit test for basic operations
+    //passed
     /*
+    {
     _v1::vector<int> b;
     for (int i = 0; i < 10; ++i) {
         b.push_back(i);
@@ -282,6 +261,7 @@ int main(int argc, const char * argv[]) {
         cout << b[i] << ' ';
     }
     cout << endl;
-     */
+    }
+    */
     return 0;
 }
