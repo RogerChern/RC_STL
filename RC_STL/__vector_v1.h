@@ -39,6 +39,20 @@ namespace _v1 {
             _end = _begin + size;
             _end_cap = _begin + new_cap;
         }
+        void self_copy_n(iterator from, iterator to, size_type count) {
+            if (from > to) {
+                while (count-- != 0) {
+                    *to++ = *from++;
+                }
+            }
+            else if (from < to) {
+                to = to + count - 1;
+                from = from + count - 1;
+                while (count-- != 0) {
+                    *to-- = *from--;
+                }
+            }
+        }
     public:
         //special member funcions
         vector() noexcept = default;
@@ -185,54 +199,47 @@ namespace _v1 {
                 reallocate();
                 pos = _begin + offset;
             }
+            //for (auto it = _end - 1; it != pos; --it) {
+            //    *it = *(it - 1);
+            //}
+            self_copy_n(pos, pos + 1, _end - pos);
             ++_end;
-            for (auto it = _end - 1; it != pos; --it) {
-                *it = *(it - 1);
-            }
             *pos = value;
 
             return pos;
         }
         void insert(iterator pos, size_type count, const_reference value) {
-            while (_end + count - 1 >= _end_cap) {
+            while (_end + count > _end_cap) {
                 difference_type offset = pos - _begin;
                 reallocate();
                 pos = _begin + offset;
             }
+            self_copy_n(pos, pos + count, _end - pos);
             _end += count;
-            for (auto it = _end - 1; it != pos + count - 1; --it) {
-                *it = *(it - count);
-            }
             for (auto i = 0; i < count; ++i) {
                 *pos++ = value;
             }
         }
         void insert(iterator pos, iterator first, iterator last) {
             difference_type count = last - first;
-            while (_end + count - 1 >= _end_cap) {
+            while (_end + count > _end_cap) {
                 difference_type offset = pos - _begin;
                 reallocate();
                 pos = _begin + offset;
             }
+            self_copy_n(pos, pos + count, _end - pos);
             _end += count;
-            for (auto it = _end - 1; it != pos + count - 1; --it) {
-                *it = *(it - count);
-            }
             for (; first != last; ++first, ++pos) {
                 *pos = *first;
             }
         }
         void erase(iterator pos) {
-            for (; pos != _end - 1; ++pos) {
-                *pos = *(pos + 1);
-            }
+            self_copy_n(pos + 1, pos, _end - pos);
             --_end;
         }
         void erase(iterator first, iterator last) {
             difference_type count = last - first;
-            for (; last != _end; ++last) {
-                *(last - count) = *last;
-            }
+            self_copy_n(last, first, _end - first);
             _end -= count;
         }
         void push_back(const_reference item) {
