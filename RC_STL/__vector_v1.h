@@ -11,7 +11,7 @@
 
 
 namespace _v1 {
-    template<typename T>
+    template<typename T, typename Alloc = std::allocator<T>>
     class vector {
     public:
         using value_type = T;
@@ -25,16 +25,17 @@ namespace _v1 {
         iterator _begin = nullptr;
         iterator _end = nullptr;
         iterator _end_cap = nullptr;
+        Alloc    alloc;
     private:
         void reallocate() {
             size_type size = _end - _begin;
             size_type cap = _end_cap - _begin;
             size_type new_cap = (cap == 0) ? 1 : cap * 2;
-            iterator temp = new value_type[new_cap];
+            iterator temp = alloc.allocate(sizeof(value_type) * new_cap);
             for (auto i = 0; i < size; ++i) {
                 temp[i] = _begin[i];
             }
-            delete [] _begin;
+            alloc.deallocate(_begin, _end_cap - _begin);
             _begin = temp;
             _end = _begin + size;
             _end_cap = _begin + new_cap;
@@ -61,7 +62,7 @@ namespace _v1 {
             while (size < count) {
                 size *= 2;
             }
-            _begin   = new value_type[size];
+            _begin   = alloc.allocate(sizeof(value_type) * size);
             _end     = _begin + count;
             _end_cap = _begin + size;
             for(auto i = 0; i < count; ++i) {
@@ -75,7 +76,7 @@ namespace _v1 {
                 while (size <= count) {
                     size *= 2;
                 }
-                _begin = new value_type[size];
+                _begin = alloc.allocate(sizeof(value_type) * size);
                 _end = _begin + count;
                 _end_cap = _begin + size;
                 for (auto i = 0; first != last; ++i) {
@@ -84,7 +85,7 @@ namespace _v1 {
             }
         }
         vector(const vector &other) {
-            _begin = new value_type[other.capacity()];
+            _begin = alloc.allocate(sizeof(value_type) * other.capacity());
             _end   = _begin + other.size();
             _end_cap = _begin + other.capacity();
             for (auto i = 0; i < other.size(); ++i) {
@@ -92,11 +93,11 @@ namespace _v1 {
             }
         }
         ~vector() {
-            delete [] _begin;
+            alloc.deallocate(_begin, _end_cap - _begin);
         }
         vector & operator=(const vector &other) {
             iterator backup = _begin;
-            _begin = new value_type[other.capacity()];
+            _begin = alloc.allocate(sizeof(value_type) * other.capacity());
             _end = _begin + other.size();
             _end_cap = _begin + other.capacity();
             for (auto i = 0; i < _end - _begin; ++i) {
@@ -249,6 +250,17 @@ namespace _v1 {
             else {
                 reallocate();
                 push_back(item);
+            }
+        }
+        template<typename... Args>
+        void emplace_back(Args&&... args) {
+            if (_end != _end_cap) {
+                alloc.construct(_end, std::forward<Args>(args)...);
+                ++_end;
+            }
+            else {
+                reallocate();
+                emplace_back(std::forward<Args>(args)...);
             }
         }
         void pop_back() {

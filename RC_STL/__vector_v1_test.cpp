@@ -20,6 +20,35 @@ using std::endl;
 int main(int argc, const char * argv[]) {
     
     //unit test for
+    //void emplace_back(Args&&... args)
+    //
+    {
+        _v1::vector<int> a;
+        for (int i = 0; i < 10; i++) {
+            a.emplace_back(i);
+        }
+        for (auto &&i : a) {
+            cout << i << ' ';
+        }
+        cout << endl;
+        cout << a.size() << ' ' << a.capacity() << endl;
+    }
+    
+    //unit test for
+    //vector<vector<int>>
+    //passed
+    {
+        _v1::vector<_v1::vector<int>> matrix;
+        matrix.push_back(_v1::vector<int>(2, 1));
+        matrix.push_back(_v1::vector<int>(2, 0));
+        matrix[0][0] = 1;
+        matrix[0][1] = 2;
+        matrix[1][0] = 3;
+        matrix[1][1] = 4;
+        cout << matrix[1][1] << endl;
+    }
+    
+    //unit test for
     //iterator insert(iterator pos, const_reference value);
     //passed
     {
